@@ -5,6 +5,24 @@ import java.awt.event.KeyListener;
 public class KeyHandler implements KeyListener {
     private boolean aPressed, dPressed, wPressed, sPressed;
     private double dx, dy;
+    
+    public boolean isaPressed() {
+        return aPressed;
+    }
+
+    public boolean isdPressed() {
+        return dPressed;
+    }
+
+    public boolean iswPressed() {
+        return wPressed;
+    }
+
+    public boolean issPressed() {
+        return sPressed;
+    }
+
+    
 
     public double getDx() {
         return dx;

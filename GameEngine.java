@@ -7,9 +7,7 @@ public class GameEngine implements Runnable {
 
     public GameEngine(CreateUI ui) {
         this.ui = ui;
-
     }
-
     public void startThread() {
         gameThread = new Thread(this);
         gameThread.start();
@@ -25,9 +23,9 @@ public class GameEngine implements Runnable {
         double delta = 0;
         long lastTime = System.nanoTime();
         long currentTime;
-        Playing play = new Playing();
-        ui.setContentPane(play);
-        play.requestFocusInWindow();
+        GamePanel gp = new GamePanel();
+        ui.setContentPane(gp);
+        gp.requestFocusInWindow();
         ui.revalidate();
         double dt = 1.0 / FPS;
         while (gameThread != null) {
@@ -37,7 +35,7 @@ public class GameEngine implements Runnable {
             lastTime = currentTime;
 
             if (delta >= 1) {
-                play.tick(dt);
+                gp.tick(dt);
                 delta--;
             }
             if (delta < 1) { //när delta är mindre än 1 och inte uppdaterar tick() så används den inte

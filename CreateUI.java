@@ -3,7 +3,7 @@ import javax.swing.JFrame;
 
 public class CreateUI extends JFrame{
     public CreateUI(){
-        setSize(800, 500);
+        setSize(800, 480);
         setResizable(false);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
