@@ -1,12 +1,12 @@
 import java.awt.Color;
 import java.awt.Graphics;
-import javax.swing.ImageIcon;
+import java.awt.Graphics2D;
 import javax.swing.JPanel;
 
 public class Playing extends JPanel{
 
     private final CreateGround cg = new CreateGround();
-    private final Player player = new Player(new ImageIcon(Player.class.getResource("/Sprites/character.png")));
+    private final Player player = new Player();
     private final KeyHandler kh = new KeyHandler();
 
     public Playing(){
@@ -16,12 +16,10 @@ public class Playing extends JPanel{
     @Override 
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
-        g.setColor(Color.green);
-        g.fillRect(0,0,getWidth(),getHeight());
-        ImageIcon i = player.getImage();
-        i.paintIcon(this, g, (int) player.getX(), (int) player.getY());
-        
-
+        Graphics2D g2 = (Graphics2D)g;
+        g2.setColor(Color.green);
+        g2.fillRect(0,0,getWidth(),getHeight());
+        player.draw(g2);
     }
     public void tick(double dt){
         player.move(dt, kh.getDx(), kh.getDy());
