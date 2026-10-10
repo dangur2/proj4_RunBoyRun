@@ -13,7 +13,7 @@ public class Player extends Entity {
 
     private void setStartingValues() {
         speed = 200;
-        x = 350;
+        x = 200;
         y = 200;
         direction = Direction.IDLE;
     }
@@ -80,7 +80,7 @@ public class Player extends Entity {
         }
     }
 
-    public void draw(Graphics2D g2) {
+    public void draw(Graphics2D g2, Camera camera) {
         BufferedImage image = null;
 
         switch (direction) {
@@ -125,7 +125,7 @@ public class Player extends Entity {
                 }
             }
         }
-        g2.drawImage(image, (int) x, (int) y, spriteSizeX, spriteSizeY, null);
+        g2.drawImage(image, ((int) x - (int) camera.getTx()), ((int) y - (int) camera.getTy()), playerSizeX, playerSizeY, null);
     }
 
     public double getX() {

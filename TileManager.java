@@ -2,6 +2,7 @@
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import javax.imageio.ImageIO;
@@ -9,9 +10,7 @@ import javax.imageio.ImageIO;
 public class TileManager {
 
     private final Tile[] tile;
-    private final int screenCol = 25;
-    private final int screenRow = 15;
-    private final int tileSize = 32;
+
     private final GamePanel gp;
     private BufferedImage noise;
     private final int mapTileNum[][];
@@ -19,7 +18,7 @@ public class TileManager {
     public TileManager(GamePanel gp) {
         this.gp = gp;
         tile = new Tile[10];
-        this.mapTileNum = new int[screenCol][screenRow];
+        this.mapTileNum = new int[gp.worldCol][gp.worldRow];
 
         setTileImage();
         loadMap();
@@ -33,7 +32,7 @@ public class TileManager {
             tile[1].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/water_tile.png"));
             tile[2] = new Tile();
             tile[2].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/brick_tile.png"));
-        } catch (Exception e) {
+        } catch (IOException e) {
         }
     }
 
@@ -43,27 +42,21 @@ public class TileManager {
                 throw new Exception("Map is null");
             }
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
-            int col = 0;
-            int row = 0;
-            while (col < screenCol && row < screenRow) {
-                String line = br.readLine(); //läser den nuvarande raden i din textfil
+            for (int i = 0; i < gp.screenRow; i++) {
+                String line = br.readLine();
                 if (line == null) {
-                    throw new Exception("Text in file is null");
+                    throw new Exception("line är null");
                 }
-                while (col < screenCol) {
-                    String numbers[] = line.split(" "); //delar raden vid varje mellanslag och stoppar siffran, som blir en string, i numbers
-                    int num = Integer.parseInt(numbers[col]); //gör siffran tillbaka till int
-                    mapTileNum[col][row] = num; //lägger in det numren i mapTileNum i indexen col, row. Så mapTileNum[0][0] = tile[0], mapTileNum[1][0] = tile[0]
-                    col++;
-                }
-                if (col == screenCol) { //resettar till första kolumnen men nästa rad om man når sista kolumnen
-                    col = 0;
-                    row++;
-                }
+                String numbers[] = line.split(" ");
+                for (int j = 0; j < gp.screenCol; j++) {
 
+                    int num = Integer.parseInt(numbers[j]);
+                    mapTileNum[j][i] = num;
+                }
             }
+            
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -85,28 +78,11 @@ public class TileManager {
         }
     }
 
-    public void draw(Graphics2D g2) {
-        // randomiseBackground();
-        // g2.drawImage(noise, 0,0,null);
-
-        for (int i = 0; i < screenRow; i++) {
-            for (int j = 0; j < screenCol; j++) {
-                g2.drawImage(tile[mapTileNum[j][i]].image, j*tileSize, i*tileSize, tileSize, tileSize, null);
+    public void draw(Graphics2D g2, Camera camera) {
+        for (int i = 0; i < gp.screenRow; i++) {
+            for (int j = 0; j < gp.screenCol; j++) {
+                g2.drawImage(tile[mapTileNum[j][i]].image, (j * (gp.tileSize) - (int) camera.getTx()), (i * (gp.tileSize)  - (int) camera.getTy()), gp.tileSize, gp.tileSize, null);
             }
         }
-        // int col = 0;
-        // int row = 0;
-
-        // for (int i = 0; i < gp.getHeight(); i+=tileSize) {
-        //     for (int j = 0; j < gp.getWidth(); j+=tileSize) {
-        //         int tileNum = mapTileNum[col][row];
-        //         g2.drawImage(tile[tileNum].image, j, i, tileSize, tileSize, null);
-        //         col ++;
-        //         if (col == screenCol) {
-        //             col = 0;
-        //             row+=1;
-        //         }
-        //     }
-        // }
     }
 }
