@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.JPanel;
@@ -10,7 +9,6 @@ public class GamePanel extends JPanel{
     private final TileManager tm = new TileManager(this);
 
     public GamePanel(){
-        setBackground(Color.blue);
         this.addKeyListener(kh);
     }
     @Override 
