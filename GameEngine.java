@@ -25,6 +25,7 @@ public class GameEngine implements Runnable {
         long currentTime;
         GamePanel gp = new GamePanel();
         ui.setContentPane(gp);
+        ui.pack();
         gp.requestFocusInWindow();
         ui.revalidate();
         double dt = 1.0 / FPS;

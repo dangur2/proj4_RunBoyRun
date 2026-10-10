@@ -11,10 +11,17 @@ public class Player extends Entity {
         setPlayerImage();
     }
 
+    public int getPlayerX(){
+        return playerSizeX;
+    }
+    public int getPlayerY(){
+        return playerSizeY;
+    }
+
     private void setStartingValues() {
         speed = 200;
-        x = 200;
-        y = 200;
+        x = 750;
+        y = 750;
         direction = Direction.IDLE;
     }
 
@@ -36,7 +43,7 @@ public class Player extends Entity {
         }
     }
 
-    public void move(double dt, double dx, double dy, boolean wPressed, boolean aPressed, boolean sPressed, boolean dPressed) {
+    public void move(double dt, double dx, double dy, boolean wPressed, boolean aPressed, boolean sPressed, boolean dPressed, int worldSizeX, int worldsizeY) {
         double length = Math.sqrt(dx * dx + dy * dy); //1,0 = 1, 0,0 = 0, 1,1 = 1,4
 
         if (length == 0) {
@@ -48,8 +55,20 @@ public class Player extends Entity {
         dx = dx / length; //normalisera värdet, ex. 0,7 = 1 / 1.4 (om två directions hålls inne samtidigt)
         dy = dy / length;
 
+        
         x += dx * speed * dt; // 0.7 * 5 = 3.5 vid diagonalen gör samma speed i diagonalen som i cardinal directions
         y += dy * speed * dt;
+        
+        if (x < 0 ) {
+            x = 0;
+        } else if (x > worldSizeX - playerSizeX) {
+            x = worldSizeX - playerSizeX;
+        }
+        if (y < 0) {
+            y = 0;
+        } else if (y > worldsizeY - playerSizeY) {
+            y = worldsizeY - playerSizeY;
+        }
 
         if (dx >= 1) {
             direction = Direction.RIGHT;

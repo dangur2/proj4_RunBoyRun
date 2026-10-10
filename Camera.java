@@ -5,19 +5,20 @@ public class Camera {
         this.gp = gp;
     }
     public void follow(Player player){
-        tx = player.getX() - (gp.screenSizeX / 2) + (gp.tileSize / 2); //400 - (800 / 2)  + 32
-        ty = player.getY() - (gp.screenSizeY / 2) + (gp.tileSize / 2); 
+        tx = player.getX() + (player.playerSizeX / 2) - (gp.screenSizeX / 2); //tx är hur mycket du ska trycka allt åt sidan när du rör dig i X led
+        ty = player.getY() + (player.playerSizeY / 2) - (gp.screenSizeY / 2); //ty är hur mycket du ska trycka allt åt sidan när du rör dig i Y led
+
         if (ty <= 0) {
             ty = 0;
         }
-        if (ty >= gp.worldSizeY) {
-            ty = gp.worldSizeY;
+        if (ty >= gp.worldSizeY - gp.screenSizeY) {
+            ty = gp.worldSizeY - gp.screenSizeY;
         }
         if (tx <= 0) {
             tx = 0;
         }
-        if (tx >= gp.worldSizeX) {
-            tx = gp.worldSizeX;
+        if (tx >= gp.worldSizeX - gp.screenSizeX) {
+            tx = gp.worldSizeX - gp.screenSizeX ;
         }
 
     }

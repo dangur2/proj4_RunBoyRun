@@ -37,18 +37,18 @@ public class TileManager {
     }
 
     public void loadMap() {
-        try (InputStream is = getClass().getResourceAsStream("/Tiles/tile_Map.txt");) { //laddar in din textfil
+        try (InputStream is = getClass().getResourceAsStream("/Maps/tile_Map2.txt");) { //laddar in din textfil
             if (is == null) {
                 throw new Exception("Map is null");
             }
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            for (int i = 0; i < gp.screenRow; i++) {
+            for (int i = 0; i < gp.worldRow; i++) {
                 String line = br.readLine();
                 if (line == null) {
                     throw new Exception("line är null");
                 }
                 String numbers[] = line.split(" ");
-                for (int j = 0; j < gp.screenCol; j++) {
+                for (int j = 0; j < gp.worldCol; j++) {
 
                     int num = Integer.parseInt(numbers[j]);
                     mapTileNum[j][i] = num;
@@ -79,9 +79,14 @@ public class TileManager {
     }
 
     public void draw(Graphics2D g2, Camera camera) {
-        for (int i = 0; i < gp.screenRow; i++) {
-            for (int j = 0; j < gp.screenCol; j++) {
-                g2.drawImage(tile[mapTileNum[j][i]].image, (j * (gp.tileSize) - (int) camera.getTx()), (i * (gp.tileSize)  - (int) camera.getTy()), gp.tileSize, gp.tileSize, null);
+        int startCol = Math.max(0, (int) camera.getTx() / gp.tileSize);
+        int endCol = Math.min(gp.worldCol, ((int) camera.getTx() + gp.screenSizeX) / gp.tileSize + 1);
+        int startRow = Math.max(0,(int) camera.getTy() / gp.tileSize);
+        int endRow = Math.min(gp.worldRow,((int) camera.getTy() + gp.screenSizeY) / gp.tileSize + 1);
+
+        for (int i = startRow; i < endRow; i++) {
+            for (int j = startCol; j < endCol; j++) {
+                    g2.drawImage(tile[mapTileNum[j][i]].image, (j * (gp.tileSize) - (int) camera.getTx()), (i * (gp.tileSize)  - (int) camera.getTy()), gp.tileSize, gp.tileSize, null);
             }
         }
     }
