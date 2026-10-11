@@ -44,9 +44,7 @@ public class GameEngine implements Runnable {
                     Thread.sleep(1);
                 } catch (Exception e) {
                 }
-
             }
-
         }
     }
 }

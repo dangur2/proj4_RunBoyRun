@@ -46,7 +46,7 @@ public class Player extends Entity {
         }
     }
 
-    public void move(double dt, double dx, double dy, int worldSizeX, int worldsizeY, TileManager tm, CollisionChecker cc) {
+    public void move(double dt, double dx, double dy, int worldSizeX, int worldsizeY, TileManager tm) {
         double length = Math.sqrt(dx * dx + dy * dy); //1,0 = 1, 0,0 = 0, 1,1 = 1,4
 
         if (length == 0) {
@@ -73,11 +73,6 @@ public class Player extends Entity {
         }
         
 
-        // //flytta spelaren
-        // x += dx * speed * dt; // 0.7 * 5 = 3.5 vid diagonalen gör samma speed i diagonalen som i cardinal directions
-        // y += dy * speed * dt;
-
-
         //updatera riktningen på spelaren för matcha animationen
         if (dx >= 1) {
             direction = Direction.RIGHT;
@@ -91,11 +86,7 @@ public class Player extends Entity {
         if (dy <= -1) {
             direction = Direction.UP;
         }
-
-        
         updateSprite();
-        
-
     }
     private void updateSprite(){
         spriteCounter++;
