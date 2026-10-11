@@ -1,5 +1,6 @@
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,12 +29,36 @@ public class TileManager {
         try {
             tile[0] = new Tile();
             tile[0].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/grass_tile.png"));
+            tile[0].collision = false;
+
             tile[1] = new Tile();
             tile[1].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/water_tile.png"));
+            tile[1].collision = true;
+
             tile[2] = new Tile();
             tile[2].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/brick_tile.png"));
+            tile[2].collision = true;
         } catch (IOException e) {
         }
+    }
+
+    public boolean isSolid(double worldX, double worldY) {
+        //kollar bounds åt spelaren, sålänge den inte överskrider världstorleken
+        if (worldX < 0 || worldY < 0 || worldX >= gp.worldSizeX || worldY >= gp.worldSizeY) {
+            return true;
+        }
+        return tile[mapTileNum[(int) worldX / gp.tileSize][(int) worldY / gp.tileSize]].collision;
+    }
+
+    //kollar collision åt spelaren
+    public boolean canStandAt(double x, double y, Rectangle Hitbox) {
+        double leftX = x + Hitbox.x;
+        double rightX = leftX + Hitbox.width - 1;
+        double topY = y + Hitbox.y;
+        double bottomY = topY + Hitbox.height - 1;
+
+        //true om någon av hörnen inte nuddar en solid tile
+        return !(isSolid(leftX, topY) || isSolid(rightX, topY) || isSolid(leftX, bottomY) || isSolid(rightX, bottomY));
     }
 
     public void loadMap() {
@@ -54,7 +79,7 @@ public class TileManager {
                     mapTileNum[j][i] = num;
                 }
             }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -81,12 +106,12 @@ public class TileManager {
     public void draw(Graphics2D g2, Camera camera) {
         int startCol = Math.max(0, (int) camera.getTx() / gp.tileSize);
         int endCol = Math.min(gp.worldCol, ((int) camera.getTx() + gp.screenSizeX) / gp.tileSize + 1);
-        int startRow = Math.max(0,(int) camera.getTy() / gp.tileSize);
-        int endRow = Math.min(gp.worldRow,((int) camera.getTy() + gp.screenSizeY) / gp.tileSize + 1);
+        int startRow = Math.max(0, (int) camera.getTy() / gp.tileSize);
+        int endRow = Math.min(gp.worldRow, ((int) camera.getTy() + gp.screenSizeY) / gp.tileSize + 1);
 
         for (int i = startRow; i < endRow; i++) {
             for (int j = startCol; j < endCol; j++) {
-                    g2.drawImage(tile[mapTileNum[j][i]].image, (j * (gp.tileSize) - (int) camera.getTx()), (i * (gp.tileSize)  - (int) camera.getTy()), gp.tileSize, gp.tileSize, null);
+                g2.drawImage(tile[mapTileNum[j][i]].image, (j * (gp.tileSize) - (int) camera.getTx()), (i * (gp.tileSize) - (int) camera.getTy()), gp.tileSize, gp.tileSize, null);
             }
         }
     }

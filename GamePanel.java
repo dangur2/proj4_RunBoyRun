@@ -18,6 +18,7 @@ public class GamePanel extends JPanel{
     private final KeyHandler kh = new KeyHandler();
     private final TileManager tm = new TileManager(this);
     private final Camera camera = new Camera(this);
+    private final CollisionChecker cc = new CollisionChecker(this);
 
     public GamePanel(){
         this.addKeyListener(kh);
@@ -26,14 +27,12 @@ public class GamePanel extends JPanel{
     @Override 
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
-        System.out.println(getWidth() + " get() "+getHeight());
-        System.out.println(screenSizeX + " screensize "+screenSizeY);
         Graphics2D g2 = (Graphics2D)g;
         tm.draw(g2, camera);
         player.draw(g2, camera);
     }
     public void tick(double dt){
-        player.move(dt, kh.getDx(), kh.getDy(), kh.iswPressed(), kh.isaPressed(), kh.isdPressed(), kh.issPressed(), worldSizeX, worldSizeY);
+        player.move(dt, kh.getDx(), kh.getDy(), worldSizeX, worldSizeY, tm,cc);
         camera.follow(player);
         repaint();
     }

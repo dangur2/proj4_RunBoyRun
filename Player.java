@@ -1,5 +1,6 @@
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -7,6 +8,7 @@ import javax.imageio.ImageIO;
 public class Player extends Entity {
 
     public Player() {
+        collArea = new Rectangle(10,25,12,7);
         setStartingValues();
         setPlayerImage();
     }
@@ -20,8 +22,9 @@ public class Player extends Entity {
 
     private void setStartingValues() {
         speed = 200;
-        x = 750;
-        y = 750;
+        x = 950;
+        y = 900;
+        playerCollision = true;
         direction = Direction.IDLE;
     }
 
@@ -43,7 +46,7 @@ public class Player extends Entity {
         }
     }
 
-    public void move(double dt, double dx, double dy, boolean wPressed, boolean aPressed, boolean sPressed, boolean dPressed, int worldSizeX, int worldsizeY) {
+    public void move(double dt, double dx, double dy, int worldSizeX, int worldsizeY, TileManager tm, CollisionChecker cc) {
         double length = Math.sqrt(dx * dx + dy * dy); //1,0 = 1, 0,0 = 0, 1,1 = 1,4
 
         if (length == 0) {
@@ -55,21 +58,27 @@ public class Player extends Entity {
         dx = dx / length; //normalisera värdet, ex. 0,7 = 1 / 1.4 (om två directions hålls inne samtidigt)
         dy = dy / length;
 
+         //kolla om tilen man går mot är solid för collision
         
-        x += dx * speed * dt; // 0.7 * 5 = 3.5 vid diagonalen gör samma speed i diagonalen som i cardinal directions
-        y += dy * speed * dt;
-        
-        if (x < 0 ) {
-            x = 0;
-        } else if (x > worldSizeX - playerSizeX) {
-            x = worldSizeX - playerSizeX;
-        }
-        if (y < 0) {
-            y = 0;
-        } else if (y > worldsizeY - playerSizeY) {
-            y = worldsizeY - playerSizeY;
-        }
+        double newX = x + dx * speed * dt;
+        double newY = y + dy * speed * dt;
 
+        //kolla om du kan gå höger eller vänster
+        if(tm.canStandAt(newX, y, collArea)){
+            x = newX;
+        }
+        //kolla om du kan gå upp eller ner
+        if (tm.canStandAt(x, newY, collArea)){
+            y = newY;
+        }
+        
+
+        // //flytta spelaren
+        // x += dx * speed * dt; // 0.7 * 5 = 3.5 vid diagonalen gör samma speed i diagonalen som i cardinal directions
+        // y += dy * speed * dt;
+
+
+        //updatera riktningen på spelaren för matcha animationen
         if (dx >= 1) {
             direction = Direction.RIGHT;
         }
@@ -82,6 +91,8 @@ public class Player extends Entity {
         if (dy <= -1) {
             direction = Direction.UP;
         }
+
+        
         updateSprite();
         
 
@@ -145,6 +156,9 @@ public class Player extends Entity {
             }
         }
         g2.drawImage(image, ((int) x - (int) camera.getTx()), ((int) y - (int) camera.getTy()), playerSizeX, playerSizeY, null);
+    }
+    public Rectangle getBounds(){
+        return collArea;
     }
 
     public double getX() {

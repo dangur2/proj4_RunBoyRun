@@ -1,3 +1,4 @@
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 public class Entity {
@@ -9,6 +10,8 @@ public class Entity {
     public Direction direction;
     public int playerSizeX = 32;
     public int playerSizeY = 32;
+    public Rectangle collArea;
+    public boolean playerCollision = false;
 
     public int spriteCounter = 0;
     public int spriteNum = 1;
