@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Random;
 import javax.imageio.ImageIO;
 
 public class TileManager {
@@ -22,10 +23,11 @@ public class TileManager {
         this.mapTileNum = new int[gp.worldCol][gp.worldRow];
 
         setTileImage();
-        loadMap();
+        // loadMap();
+        generativeMap();
     }
 
-    public void setTileImage() {
+    private void setTileImage() {
         try {
             tile[0] = new Tile();
             tile[0].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/grass_tile.png"));
@@ -38,6 +40,10 @@ public class TileManager {
             tile[2] = new Tile();
             tile[2].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/brick_tile.png"));
             tile[2].collision = true;
+
+            tile[3] = new Tile();
+            tile[3].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/sand_tile.png"));
+            tile[3].collision = false;
         } catch (IOException e) {
         }
     }
@@ -60,8 +66,51 @@ public class TileManager {
         //true om någon av hörnen inte nuddar en solid tile
         return !(isSolid(leftX, topY) || isSolid(rightX, topY) || isSolid(leftX, bottomY) || isSolid(rightX, bottomY));
     }
+    private void generativeMap(){
+        Random random = new Random();
+        
+        int spacing = 10;
+        int gridCols = (gp.worldCol / spacing) + 2; //dela upp världen i en mindre rutnät: var tioende tile har en random siffra, som "flaggor"
+        int gridRows = (gp.worldRow / spacing) + 2;
+        double grid[][] = new double[gridCols][gridRows];
 
-    public void loadMap() {
+        for(int a = 0; a < gridRows; a++){
+            for (int b = 0; b < gridCols; b++) {
+                grid[b][a] = random.nextDouble(); //sätter en random 0-1 siffra på varje "flagga" i världen
+            }
+        }
+        for (int i = 0; i < gp.worldRow; i++) {
+            for (int j = 0; j < gp.worldCol; j++) {
+                int a = j / spacing; //vilken ruta den aktuella tilen tillhör i det mindre 9x9
+                int b = i / spacing; 
+
+                //detta räknar ut tilens nuvarande position till flaggan, från 0 till 1. 0 = vänster flagga, 0.9 = höger flagga
+                double tx = (j % spacing) / (double) spacing;  //2 % 10 = 2 / 10 = 0.2, alltså värdet på tilen i korrelation mellan vänster och höger flagga. 
+                double ty = (i % spacing) / (double) spacing;  // samma som ovan för Y
+
+                //linear interpolation
+                double top = lerp(grid[a][b], grid[a+1][b], tx); //rutans övre kant, som blandar värde mellan vänster och höger flagga
+                double bottom = lerp(grid[a][b+1], grid[a+1][b+1], tx); //rutans undre kant, gör samma sak
+                double value = lerp(top, bottom, ty); //blandar övre och undre kanten för att mjukt värde
+
+                if (value < 0.3) {
+                    mapTileNum[j][i] = 1;
+                }
+                else if (value < 0.4) {
+                    mapTileNum[j][i] = 3;
+                }
+                else {
+                    mapTileNum[j][i] = 0;
+                }
+
+            }
+        }
+    }
+    private double lerp(double a, double b, double t){
+        return a + (b - a) * t; //Linjär interpolation för att räkna ut ett värde mellan punkt A och punkt B.
+                                //T finns för att bestämma hur långt vi kommit mellan A och B. T:0 = A, T:0.5 = halvvägs till B, T:1 = B
+    }
+    private void loadMap() {
         try (InputStream is = getClass().getResourceAsStream("/Maps/tile_Map2.txt");) { //laddar in din textfil
             if (is == null) {
                 throw new Exception("Map is null");
@@ -74,7 +123,6 @@ public class TileManager {
                 }
                 String numbers[] = line.split(" ");
                 for (int j = 0; j < gp.worldCol; j++) {
-
                     int num = Integer.parseInt(numbers[j]);
                     mapTileNum[j][i] = num;
                 }
@@ -85,12 +133,10 @@ public class TileManager {
         }
     }
 
-    public void randomiseBackground() {
-        int screenX = 800;
-        int screenY = 480;
-        noise = new BufferedImage(screenX, screenY, BufferedImage.TYPE_INT_RGB);
-        for (int i = 0; i < screenX; i++) {
-            for (int j = 0; j < screenY; j++) {
+    private void randomiseBackground() {
+        noise = new BufferedImage(gp.screenSizeX, gp.screenSizeY, BufferedImage.TYPE_INT_RGB);
+        for (int i = 0; i < gp.screenSizeX; i+=gp.tileSize) {
+            for (int j = 0; j < gp.screenSizeY; j+=gp.tileSize) {
                 int red = (int) (Math.random() * 256);
                 int green = (int) (Math.random() * 256);
                 int blue = (int) (Math.random() * 256);
@@ -104,11 +150,13 @@ public class TileManager {
     }
 
     public void draw(Graphics2D g2, Camera camera) {
+        
         int startCol = Math.max(0, (int) camera.getTx() / gp.tileSize);
         int endCol = Math.min(gp.worldCol, ((int) camera.getTx() + gp.screenSizeX) / gp.tileSize + 1);
         int startRow = Math.max(0, (int) camera.getTy() / gp.tileSize);
         int endRow = Math.min(gp.worldRow, ((int) camera.getTy() + gp.screenSizeY) / gp.tileSize + 1);
 
+        
         for (int i = startRow; i < endRow; i++) {
             for (int j = startCol; j < endCol; j++) {
                 g2.drawImage(tile[mapTileNum[j][i]].image, (j * (gp.tileSize) - (int) camera.getTx()), (i * (gp.tileSize) - (int) camera.getTy()), gp.tileSize, gp.tileSize, null);
