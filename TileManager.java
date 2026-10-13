@@ -17,14 +17,18 @@ public class TileManager {
     private BufferedImage noise;
     private final int mapTileNum[][];
 
-    public TileManager(GamePanel gp) {
+    public TileManager(GamePanel gp, MapType mapType) {
         this.gp = gp;
         tile = new Tile[10];
         this.mapTileNum = new int[gp.worldCol][gp.worldRow];
 
         setTileImage();
-        // loadMap();
-        generativeMap();
+        
+        switch (mapType) {
+            case GENERATED -> generativeMap();
+            case MAP -> loadMap();
+        }
+        
     }
 
     private void setTileImage() {
@@ -66,7 +70,7 @@ public class TileManager {
         //true om någon av hörnen inte nuddar en solid tile
         return !(isSolid(leftX, topY) || isSolid(rightX, topY) || isSolid(leftX, bottomY) || isSolid(rightX, bottomY));
     }
-    private void generativeMap(){
+    public void generativeMap(){
         Random random = new Random();
         
         int spacing = 10;
@@ -94,13 +98,13 @@ public class TileManager {
                 double value = lerp(top, bottom, ty); //blandar övre och undre kanten för att mjukt värde
 
                 if (value < 0.3) {
-                    mapTileNum[j][i] = 1;
+                    mapTileNum[j][i] = 1; //vatten
                 }
                 else if (value < 0.4) {
-                    mapTileNum[j][i] = 3;
+                    mapTileNum[j][i] = 3;//sand
                 }
                 else {
-                    mapTileNum[j][i] = 0;
+                    mapTileNum[j][i] = 0;//gräs
                 }
 
             }
@@ -110,7 +114,7 @@ public class TileManager {
         return a + (b - a) * t; //Linjär interpolation för att räkna ut ett värde mellan punkt A och punkt B.
                                 //T finns för att bestämma hur långt vi kommit mellan A och B. T:0 = A, T:0.5 = halvvägs till B, T:1 = B
     }
-    private void loadMap() {
+    public void loadMap() {
         try (InputStream is = getClass().getResourceAsStream("/Maps/tile_Map2.txt");) { //laddar in din textfil
             if (is == null) {
                 throw new Exception("Map is null");

@@ -4,10 +4,21 @@ public class GameEngine implements Runnable {
     private final CreateUI ui;
     private final int FPS = 60;
     private Thread gameThread;
+    private GameState currState;
+    private final TitleScreen ts = new TitleScreen(this);
+    private GamePanel gp;
+    private MapType mapType;
 
     public GameEngine(CreateUI ui) {
         this.ui = ui;
+        currState = GameState.MENU;
+
     }
+
+    public void setCurrentState(GameState newState) {
+        this.currState = newState;
+    }
+
     public void startThread() {
         gameThread = new Thread(this);
         gameThread.start();
@@ -16,35 +27,49 @@ public class GameEngine implements Runnable {
     public void stopThread() {
         gameThread = null;
     }
+    public void setMapType(MapType mapType){
+        gp = new GamePanel(mapType);
+    }
 
     @Override
     public void run() {
-        double drawInterval = 1000000000.0 / FPS;
-        double delta = 0;
-        long lastTime = System.nanoTime();
-        long currentTime;
-        GamePanel gp = new GamePanel();
-        ui.setContentPane(gp);
-        ui.pack();
-        gp.requestFocusInWindow();
-        ui.revalidate();
-        double dt = 1.0 / FPS;
-        while (gameThread != null) {
+        switch (currState) {
+            case MENU -> {
+                ui.setContentPane(ts);
+                ui.pack();
+                ts.requestFocusInWindow();
+                ui.revalidate();
 
-            currentTime = System.nanoTime();
-            delta += (currentTime - lastTime) / drawInterval;
-            lastTime = currentTime;
-
-            if (delta >= 1) {
-                gp.tick(dt);
-                delta--;
             }
-            if (delta < 1) { //när delta är mindre än 1 och inte uppdaterar tick() så används den inte
-                try {
-                    Thread.sleep(1);
-                } catch (Exception e) {
+            case PLAYING -> {
+                double drawInterval = 1000000000.0 / FPS;
+                double delta = 0;
+                long lastTime = System.nanoTime();
+                long currentTime;
+                ui.setContentPane(gp);
+                ui.pack();
+                gp.requestFocusInWindow();
+                ui.revalidate();
+                double dt = 1.0 / FPS;
+                while (gameThread != null) {
+
+                    currentTime = System.nanoTime();
+                    delta += (currentTime - lastTime) / drawInterval;
+                    lastTime = currentTime;
+
+                    if (delta >= 1) {
+                        gp.tick(dt);
+                        delta--;
+                    }
+                    if (delta < 1) { //när delta är mindre än 1 och inte uppdaterar tick() så används den inte
+                        try {
+                            Thread.sleep(1);
+                        } catch (Exception e) {
+                        }
+                    }
                 }
             }
         }
+
     }
 }

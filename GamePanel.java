@@ -16,11 +16,12 @@ public class GamePanel extends JPanel{
 
     private final Player player = new Player();
     private final KeyHandler kh = new KeyHandler();
-    private final TileManager tm = new TileManager(this);
+    private final TileManager tm;
     private final Camera camera = new Camera(this);
 
-    public GamePanel(){
+    public GamePanel(MapType mapType){
         this.addKeyListener(kh);
+        this.tm = new TileManager(this, mapType);
         setPreferredSize(new Dimension(screenSizeX, screenSizeY));
     }
     @Override 
