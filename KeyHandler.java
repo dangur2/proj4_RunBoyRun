@@ -4,7 +4,7 @@ import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
 
-    private boolean aPressed, dPressed, wPressed, sPressed;
+    private boolean aPressed, dPressed, wPressed, sPressed, ePressed;
     private double dx, dy;
 
     public boolean isaPressed() {
@@ -21,6 +21,9 @@ public class KeyHandler implements KeyListener {
 
     public boolean issPressed() {
         return sPressed;
+    }
+    public boolean isePressed() {
+        return ePressed;
     }
 
     public double getDx() {
@@ -47,6 +50,8 @@ public class KeyHandler implements KeyListener {
                 wPressed = true;
             case KeyEvent.VK_S ->
                 sPressed = true;
+            case KeyEvent.VK_E ->
+                ePressed = true;
         }
         updateDirection();
     }
@@ -63,6 +68,8 @@ public class KeyHandler implements KeyListener {
                 wPressed = false;
             case KeyEvent.VK_S ->
                 sPressed = false;
+            case KeyEvent.VK_E ->
+                ePressed = false;
         }
         updateDirection();
     }

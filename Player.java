@@ -162,6 +162,9 @@ public class Player extends Entity {
     public Rectangle getBounds(){
         return collArea;
     }
+    public Rectangle getCollison(){
+        return new Rectangle((int)x+collArea.x,(int)y+collArea.y,playerSizeX,playerSizeY);
+    }
 
     public double getX() {
         return x;

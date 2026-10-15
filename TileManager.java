@@ -76,14 +76,13 @@ public class TileManager {
 
     public Point findFreePosition() {
         Random random = new Random();
-        for (int i = 0; i < gp.worldRow; i++) {
-            for (int j = 0; j < gp.worldCol; j++) {
-                int x = random.nextInt(1, gp.worldCol) * gp.tileSize;
-                int y = random.nextInt(1, gp.worldRow) * gp.tileSize;
+        int worldPadding = 10;
+        for (int i = 0; i < 100; i++) {
+                int x = random.nextInt(worldPadding, gp.worldCol-worldPadding) * gp.tileSize;
+                int y = random.nextInt(worldPadding, gp.worldRow-worldPadding) * gp.tileSize;
                 if (!(isSolid(x, y))) {
                     return new Point(x, y);
                 }
-            }
         }
         return null;
     }

@@ -47,7 +47,7 @@ public class GamePanel extends JPanel{
     public void tick(double dt){
         player.move(dt, kh.getDx(), kh.getDy(), worldSizeX, worldSizeY, tm);
         camera.follow(player);
-        worldSpawn.handleCollision(player.getBounds());
+        worldSpawn.handleCollision(player,kh.isePressed());
         repaint();
     }
 }
