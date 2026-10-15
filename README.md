@@ -7,9 +7,9 @@ Image of titleScreen.
 ![Example image2](runboy_example5.png)
 
 
-Image of a static map.
-![Example image1](runboy_example1.png)
+Image of a generated map.
+![Example image1](runboy_example7.png)
 
 
-Image of the generated terrain.
-![Example image3](runboy_example4.png)
+Image of removing an item.
+![Example image3](runboy_example8.png)
