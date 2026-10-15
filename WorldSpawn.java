@@ -21,7 +21,6 @@ public class WorldSpawn {
     }
 
     public void handleCollision(Player player, boolean ePressed) {
-        
         for (GroundItem i : groundItems) {
             if (i.getBounds().intersects(player.getCollison()) && ePressed) {
                 player.getInventory().addItem(i.getItem());

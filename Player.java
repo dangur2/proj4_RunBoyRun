@@ -42,16 +42,16 @@ public class Player extends Entity {
     private void setPlayerImage() {
         //förladda sprites när man gör gubben
         try {
-            up1 = ImageIO.read(getClass().getResourceAsStream("/Sprites/character_up_walk1.png"));
-            up2 = ImageIO.read(getClass().getResourceAsStream("/Sprites/character_up_walk2.png"));
-            down1 = ImageIO.read(getClass().getResourceAsStream("/Sprites/character_down_walk1.png"));
-            down2 = ImageIO.read(getClass().getResourceAsStream("/Sprites/character_down_walk2.png"));
-            left1 = ImageIO.read(getClass().getResourceAsStream("/Sprites/character_left_walk1.png"));
-            left2 = ImageIO.read(getClass().getResourceAsStream("/Sprites/character_left_walk2.png"));
-            right1 = ImageIO.read(getClass().getResourceAsStream("/Sprites/character_right_walk1.png"));
-            right2 = ImageIO.read(getClass().getResourceAsStream("/Sprites/character_right_walk2.png"));
-            idle1 = ImageIO.read(getClass().getResourceAsStream("/Sprites/character_idle1.png"));
-            idle2 = ImageIO.read(getClass().getResourceAsStream("/Sprites/character_idle2.png"));
+            up1 = ImageIO.read(getClass().getResourceAsStream("/Animation/character_up_walk1.png"));
+            up2 = ImageIO.read(getClass().getResourceAsStream("/Animation/character_up_walk2.png"));
+            down1 = ImageIO.read(getClass().getResourceAsStream("/Animation/character_down_walk1.png"));
+            down2 = ImageIO.read(getClass().getResourceAsStream("/Animation/character_down_walk2.png"));
+            left1 = ImageIO.read(getClass().getResourceAsStream("/Animation/character_left_walk1.png"));
+            left2 = ImageIO.read(getClass().getResourceAsStream("/Animation/character_left_walk2.png"));
+            right1 = ImageIO.read(getClass().getResourceAsStream("/Animation/character_right_walk1.png"));
+            right2 = ImageIO.read(getClass().getResourceAsStream("/Animation/character_right_walk2.png"));
+            idle1 = ImageIO.read(getClass().getResourceAsStream("/Animation/character_idle1.png"));
+            idle2 = ImageIO.read(getClass().getResourceAsStream("/Animation/character_idle2.png"));
         } catch (IOException | IllegalArgumentException e) {
             throw new IllegalStateException("no find sprite amigo", e);
         }

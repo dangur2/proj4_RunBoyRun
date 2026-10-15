@@ -29,6 +29,11 @@ public class Inventory {
         x.increaseQuantity(1);
         inventory.add(x);
     }
+    public void removeItem(int x){
+        if (inventory.get(x) != null) {
+            inventory.remove(x);
+        }
+    }
 
     public Item getItem(int x){
         return this.inventory.get(x);

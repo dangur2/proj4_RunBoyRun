@@ -16,7 +16,10 @@ public class MouseHandler implements MouseListener{
     @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
-            is.handleClick(e.getX(),e.getY());
+            is.handleLeftClick(e.getX(),e.getY());
+        }
+        if (e.getButton() == MouseEvent.BUTTON3) {
+            is.handleRightClick(e.getX(),e.getY());
         }
     }
 
