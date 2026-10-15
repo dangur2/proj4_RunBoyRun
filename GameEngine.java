@@ -7,7 +7,7 @@ public class GameEngine implements Runnable {
     private GameState currState;
     private final TitleScreen ts = new TitleScreen(this);
     private GamePanel gp;
-    private MapType mapType;
+
 
     public GameEngine(CreateUI ui) {
         this.ui = ui;
@@ -27,7 +27,8 @@ public class GameEngine implements Runnable {
     public void stopThread() {
         gameThread = null;
     }
-    public void setMapType(MapType mapType){
+
+    public void setMapType(MapType mapType) {
         gp = new GamePanel(mapType);
     }
 

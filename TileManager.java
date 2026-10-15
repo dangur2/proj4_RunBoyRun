@@ -1,5 +1,6 @@
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -23,12 +24,14 @@ public class TileManager {
         this.mapTileNum = new int[gp.worldCol][gp.worldRow];
 
         setTileImage();
-        
+
         switch (mapType) {
-            case GENERATED -> generativeMap();
-            case MAP -> loadMap();
+            case GENERATED ->
+                generativeMap();
+            case MAP ->
+                loadMap();
         }
-        
+
     }
 
     private void setTileImage() {
@@ -70,15 +73,30 @@ public class TileManager {
         //true om någon av hörnen inte nuddar en solid tile
         return !(isSolid(leftX, topY) || isSolid(rightX, topY) || isSolid(leftX, bottomY) || isSolid(rightX, bottomY));
     }
-    public void generativeMap(){
+
+    public Point findFreePosition() {
         Random random = new Random();
-        
+        for (int i = 0; i < gp.worldRow; i++) {
+            for (int j = 0; j < gp.worldCol; j++) {
+                int x = random.nextInt(1, gp.worldCol) * gp.tileSize;
+                int y = random.nextInt(1, gp.worldRow) * gp.tileSize;
+                if (!(isSolid(x, y))) {
+                    return new Point(x, y);
+                }
+            }
+        }
+        return null;
+    }
+
+    private void generativeMap() {
+        Random random = new Random();
+
         int spacing = 10;
         int gridCols = (gp.worldCol / spacing) + 2; //dela upp världen i en mindre rutnät: var tioende tile har en random siffra, som "flaggor"
         int gridRows = (gp.worldRow / spacing) + 2;
         double grid[][] = new double[gridCols][gridRows];
 
-        for(int a = 0; a < gridRows; a++){
+        for (int a = 0; a < gridRows; a++) {
             for (int b = 0; b < gridCols; b++) {
                 grid[b][a] = random.nextDouble(); //sätter en random 0-1 siffra på varje "flagga" i världen
             }
@@ -86,35 +104,35 @@ public class TileManager {
         for (int i = 0; i < gp.worldRow; i++) {
             for (int j = 0; j < gp.worldCol; j++) {
                 int a = j / spacing; //vilken ruta den aktuella tilen tillhör i det mindre 9x9
-                int b = i / spacing; 
+                int b = i / spacing;
 
                 //detta räknar ut tilens nuvarande position till flaggan, från 0 till 1. 0 = vänster flagga, 0.9 = höger flagga
                 double tx = (j % spacing) / (double) spacing;  //2 % 10 = 2 / 10 = 0.2, alltså värdet på tilen i korrelation mellan vänster och höger flagga. 
                 double ty = (i % spacing) / (double) spacing;  // samma som ovan för Y
 
                 //linear interpolation
-                double top = lerp(grid[a][b], grid[a+1][b], tx); //rutans övre kant, som blandar värde mellan vänster och höger flagga
-                double bottom = lerp(grid[a][b+1], grid[a+1][b+1], tx); //rutans undre kant, gör samma sak
+                double top = lerp(grid[a][b], grid[a + 1][b], tx); //rutans övre kant, som blandar värde mellan vänster och höger flagga
+                double bottom = lerp(grid[a][b + 1], grid[a + 1][b + 1], tx); //rutans undre kant, gör samma sak
                 double value = lerp(top, bottom, ty); //blandar övre och undre kanten för att mjukt värde
 
-                if (value < 0.3) {
+                if (value < 0.32) {
                     mapTileNum[j][i] = 1; //vatten
-                }
-                else if (value < 0.4) {
+                } else if (value < 0.44) {
                     mapTileNum[j][i] = 3;//sand
-                }
-                else {
+                } else {
                     mapTileNum[j][i] = 0;//gräs
                 }
 
             }
         }
     }
-    private double lerp(double a, double b, double t){
+
+    private double lerp(double a, double b, double t) {
         return a + (b - a) * t; //Linjär interpolation för att räkna ut ett värde mellan punkt A och punkt B.
-                                //T finns för att bestämma hur långt vi kommit mellan A och B. T:0 = A, T:0.5 = halvvägs till B, T:1 = B
+        //T finns för att bestämma hur långt vi kommit mellan A och B. T:0 = A, T:0.5 = halvvägs till B, T:1 = B
     }
-    public void loadMap() {
+
+    private void loadMap() {
         try (InputStream is = getClass().getResourceAsStream("/Maps/tile_Map2.txt");) { //laddar in din textfil
             if (is == null) {
                 throw new Exception("Map is null");
@@ -139,8 +157,8 @@ public class TileManager {
 
     private void randomiseBackground() {
         noise = new BufferedImage(gp.screenSizeX, gp.screenSizeY, BufferedImage.TYPE_INT_RGB);
-        for (int i = 0; i < gp.screenSizeX; i+=gp.tileSize) {
-            for (int j = 0; j < gp.screenSizeY; j+=gp.tileSize) {
+        for (int i = 0; i < gp.screenSizeX; i += gp.tileSize) {
+            for (int j = 0; j < gp.screenSizeY; j += gp.tileSize) {
                 int red = (int) (Math.random() * 256);
                 int green = (int) (Math.random() * 256);
                 int blue = (int) (Math.random() * 256);
@@ -154,13 +172,12 @@ public class TileManager {
     }
 
     public void draw(Graphics2D g2, Camera camera) {
-        
+
         int startCol = Math.max(0, (int) camera.getTx() / gp.tileSize);
         int endCol = Math.min(gp.worldCol, ((int) camera.getTx() + gp.screenSizeX) / gp.tileSize + 1);
         int startRow = Math.max(0, (int) camera.getTy() / gp.tileSize);
         int endRow = Math.min(gp.worldRow, ((int) camera.getTy() + gp.screenSizeY) / gp.tileSize + 1);
 
-        
         for (int i = startRow; i < endRow; i++) {
             for (int j = startCol; j < endCol; j++) {
                 g2.drawImage(tile[mapTileNum[j][i]].image, (j * (gp.tileSize) - (int) camera.getTx()), (i * (gp.tileSize) - (int) camera.getTy()), gp.tileSize, gp.tileSize, null);

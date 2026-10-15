@@ -1,16 +1,25 @@
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 public class Player extends Entity {
 
-    public Player() {
+    private final Inventory inventory;
+
+    public Player(TileManager tm) {
         collArea = new Rectangle(10,25,12,7);
-        setStartingValues();
+        inventory = new Inventory(new ArrayList<>());
+        setStartingValues(tm.findFreePosition());
         setPlayerImage();
+    }
+
+    public Inventory getInventory(){
+        return this.inventory;
     }
 
     public int getPlayerX(){
@@ -20,12 +29,14 @@ public class Player extends Entity {
         return playerSizeY;
     }
 
-    private void setStartingValues() {
-        speed = 200;
-        x = 950;
-        y = 900;
+    private void setStartingValues(Point p) {
+        speed = 150;
+        x = p.x;
+        y = p.y;
         playerCollision = true;
         direction = Direction.IDLE;
+        System.out.println("Spawn x: "+x);
+        System.out.println("Spawn y: "+y);
     }
 
     private void setPlayerImage() {

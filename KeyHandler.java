@@ -3,9 +3,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
+
     private boolean aPressed, dPressed, wPressed, sPressed;
     private double dx, dy;
-    
+
     public boolean isaPressed() {
         return aPressed;
     }
@@ -21,8 +22,6 @@ public class KeyHandler implements KeyListener {
     public boolean issPressed() {
         return sPressed;
     }
-
-    
 
     public double getDx() {
         return dx;
@@ -71,15 +70,15 @@ public class KeyHandler implements KeyListener {
     private void updateDirection() {
         dx = 0;
         dy = 0;
-        
-        if(wPressed && !sPressed){
+
+        if (wPressed && !sPressed) {
             dy = -1;
-        } else if (sPressed && !wPressed){
+        } else if (sPressed && !wPressed) {
             dy = 1;
         }
-        if(aPressed && !dPressed){
+        if (aPressed && !dPressed) {
             dx = -1;
-        } else if (dPressed && !aPressed){
+        } else if (dPressed && !aPressed) {
             dx = 1;
         }
     }
