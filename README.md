@@ -1,6 +1,8 @@
 # proj4_RunBoyRun
-A short scope 2D game where u can move around, a camera follows you and some collision checks exists. Will try to add a generating world now that the original scope is done!
-This project has taught me alot about the how to use and the math behind a moving player, a camera, generating tiles, a collisionsystem. Not entirely easy but happy to have made it work!
+Original scope was a moveable character, a map made of tiles, a simple collision check, [x] completed
+Implemented an usable hotbar, item pickup, item use and destroy from rightclick, randomly spawnable items in the world, eatable items, healthbar, gameloop, a lot of bugfixes & improvements, [x] completed
+Working on: [] Improved item spawns, rarity on spawns. [] Randomly spawning trees, flowers (will probably need Zbuffer). [] (Maybe) swimming to traverse water [] Enemies to make gameloop harder. 
+[] escape to pause & return to titlescreen. [] timer and scoreCounter. [] death / lose state. [] difficulty setting to make itemspawns fewer / more enemies / less healing from item
 
 
 Image of titleScreen.
