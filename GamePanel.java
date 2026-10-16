@@ -21,17 +21,26 @@ public class GamePanel extends JPanel{
     private final InventoryScreen is;
     private final MouseHandler mh;
     private final WorldSpawn worldSpawn;
+    private final PlayerHealthView phv;
+    private final Sound sound;
+    private final TimeScoreView tsv;
+    private final TimeScore ts;
 
     public GamePanel(MapType mapType){
         this.tm = new TileManager(this, mapType);
-        this.player = new Player(tm);
+        this.player = new Player(tm,this);
         this.camera = new Camera(worldSizeX,worldSizeY,screenSizeX,screenSizeY);
-        this.is = new InventoryScreen(player.getInventory());
-        this.mh = new MouseHandler(is);
         this.worldSpawn = new WorldSpawn(tm);
+        this.phv = new PlayerHealthView();
+        this.sound = new Sound();
+        this.tsv = new TimeScoreView();
+        this.ts = new TimeScore();
+        this.is = new InventoryScreen(player,this, ts);
+        this.mh = new MouseHandler(is);
 
         this.addKeyListener(kh);
         this.addMouseListener(mh);
+        playMusic();
         setPreferredSize(new Dimension(screenSizeX, screenSizeY));
     }
     @Override 
@@ -42,12 +51,25 @@ public class GamePanel extends JPanel{
         worldSpawn.draw(g2, camera);
         player.draw(g2, camera);
         is.draw(g2);
-        
+        phv.draw(g2,player.getHealth());
+        tsv.draw(g2, ts.getTime(), ts.getScore());
     }
     public void tick(double dt){
         player.move(dt, kh.getDx(), kh.getDy(), worldSizeX, worldSizeY, tm);
+        player.hurt();
+        ts.calculate();
         camera.follow(player);
-        worldSpawn.handleCollision(player,kh.isePressed());
+        worldSpawn.handleCollision(player,kh.isePressed(), this);
         repaint();
+    }
+    public void playMusic(){
+        sound.playMusic();
+        sound.loopMusic();
+    }
+    public void stopMusic(){
+        sound.stopMusic();
+    }
+    public void playSound(SoundEffect soundEffect){
+        sound.playSound(soundEffect);
     }
 }

@@ -15,14 +15,15 @@ public class WorldSpawn {
 
     private void generateItems(int amount) {
         for (int i = 0; i < amount; i++) {
-            groundItems.add(new GroundItem(new Item("red berry", false, "/Sprites/redberry.png", 0), tm.findFreePosition()));
-            groundItems.add(new GroundItem(new Item("purple berry", false, "/Sprites/purpleberry.png", 0), tm.findFreePosition()));
+            groundItems.add(new GroundItem(new Item("red berry", true, "/Sprites/redberry.png", 0,5), tm.findFreePosition()));
+            groundItems.add(new GroundItem(new Item("purple berry", true, "/Sprites/purpleberry.png", 0,15), tm.findFreePosition()));
         }
     }
 
-    public void handleCollision(Player player, boolean ePressed) {
+    public void handleCollision(Player player, boolean ePressed, GamePanel ge) {
         for (GroundItem i : groundItems) {
             if (i.getBounds().intersects(player.getCollison()) && ePressed) {
+                ge.playSound(SoundEffect.PICKUP);
                 player.getInventory().addItem(i.getItem());
                 groundItems.remove(i);
                 break;

@@ -10,14 +10,29 @@ import javax.imageio.ImageIO;
 public class Player extends Entity {
 
     private final Inventory inventory;
+    private int currHealth = 12;
+    private final int maxHealth = 100;
+    private int dmgCounter;
+    private final GamePanel gp;
+    private double length;
 
-    public Player(TileManager tm) {
+    public Player(TileManager tm, GamePanel gp) {
+        this.gp = gp;
+        this.currHealth = 100;
         collArea = new Rectangle(10,25,12,7);
         inventory = new Inventory(new ArrayList<>());
         setStartingValues(tm.findFreePosition());
         setPlayerImage();
     }
-
+    public void increaseHealth(int x){
+        this.currHealth += x;
+        if (currHealth > maxHealth) {
+            currHealth = maxHealth;
+        }
+    }
+    public int getHealth(){
+        return this.currHealth;
+    }
     public Inventory getInventory(){
         return this.inventory;
     }
@@ -28,15 +43,30 @@ public class Player extends Entity {
     public int getPlayerY(){
         return playerSizeY;
     }
+    public void hurt(){
+        if(currHealth > 0){
+            dmgCounter ++;
+            if (dmgCounter >= 50) { 
+                currHealth -= 1;
+                dmgCounter = 0;
+            }
+            if (currHealth < 10) {
+                
+            }
+            
+        }
+        playerLose();
+    }
 
+    private void playerLose() {
+        
+    }
     private void setStartingValues(Point p) {
         speed = 150;
         x = p.x;
         y = p.y;
         playerCollision = true;
         direction = Direction.IDLE;
-        System.out.println("Spawn x: "+x);
-        System.out.println("Spawn y: "+y);
     }
 
     private void setPlayerImage() {
@@ -58,7 +88,7 @@ public class Player extends Entity {
     }
 
     public void move(double dt, double dx, double dy, int worldSizeX, int worldsizeY, TileManager tm) {
-        double length = Math.sqrt(dx * dx + dy * dy); //1,0 = 1, 0,0 = 0, 1,1 = 1,4
+        length = Math.sqrt(dx * dx + dy * dy); //1,0 = 1, 0,0 = 0, 1,1 = 1,4
 
         if (length == 0) {
             direction = Direction.IDLE;
@@ -97,6 +127,7 @@ public class Player extends Entity {
         if (dy <= -1) {
             direction = Direction.UP;
         }
+        
         updateSprite();
     }
     private void updateSprite(){
@@ -104,6 +135,7 @@ public class Player extends Entity {
         //hastigheten av hur snabbt den byter sprite vid gång
         if (spriteCounter > 15) {
             if (spriteNum == 1) {
+                playSound();
                 spriteNum = 2;
             } else if (spriteNum == 2) {
                 spriteNum = 1;
@@ -112,6 +144,11 @@ public class Player extends Entity {
         }
     }
 
+    private void playSound() {
+        if (spriteNum == 1 && length > 0) {
+            gp.playSound(SoundEffect.STEP);
+        }
+    }
     public void draw(Graphics2D g2, Camera camera) {
         BufferedImage image = null;
 
