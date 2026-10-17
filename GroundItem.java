@@ -8,7 +8,7 @@ public class GroundItem{
     
     public GroundItem(Item item, Point bounds){
         this.item = item;
-        collision = new Rectangle( (int)bounds.getX(), (int) bounds.getY(),32,32);
+        collision = new Rectangle((int)bounds.getX(), (int) bounds.getY(),32,32);
     }
 
     public Item getItem(){

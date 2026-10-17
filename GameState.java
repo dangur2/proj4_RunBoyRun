@@ -1,4 +1,6 @@
 public enum GameState {
     MENU,
-    PLAYING
+    PLAYING,
+    PAUSE,
+    LOSE
 }

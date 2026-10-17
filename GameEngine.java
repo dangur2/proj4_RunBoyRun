@@ -1,76 +1,110 @@
 
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
 public class GameEngine implements Runnable {
 
     private final CreateUI ui;
     private final int FPS = 60;
     private Thread gameThread;
-    private GameState currState;
-    private final TitleScreen ts = new TitleScreen(this);
+    private volatile GameState currState;
+    private final TitleScreen ts;
     private GamePanel gp;
-
+    private final MouseHandler mh;
+    private final Sound sound;
+    private volatile boolean running;
 
     public GameEngine(CreateUI ui) {
+        running = true;
         this.ui = ui;
-        currState = GameState.MENU;
+        this.mh = new MouseHandler();
+        this.ts = new TitleScreen(this);
+        this.sound = new Sound();
+        mh.setActive(ts);
 
+        setCurrentState(GameState.MENU);
+
+        sound.playMusic();
+        sound.loopMusic();
+        startThread();
+    }
+
+    public MouseHandler getMh() {
+        return mh;
     }
 
     public void setCurrentState(GameState newState) {
+        switch (newState) {
+            case MENU -> {
+                showPanel(ts);
+                mh.setActive(ts);
+            }
+            case PLAYING -> {
+                showPanel(gp);
+                mh.setActive(gp);
+            }
+            case PAUSE -> {}
+            case LOSE -> {}
+        }
         this.currState = newState;
     }
 
-    public void startThread() {
+    private void showPanel(JPanel x) {
+        SwingUtilities.invokeLater(() -> {
+            ui.setContentPane(x);
+            ui.pack();
+            x.requestFocusInWindow();
+            ui.revalidate();
+            ui.repaint();
+        });
+    }
+
+    private void startThread() {
         gameThread = new Thread(this);
+        gameThread.setDaemon(true);
         gameThread.start();
     }
 
-    public void stopThread() {
-        gameThread = null;
-    }
-
     public void setMapType(MapType mapType) {
-        gp = new GamePanel(mapType);
+        gp = new GamePanel(mapType, getMh(), this);
     }
 
     @Override
     public void run() {
-        switch (currState) {
-            case MENU -> {
-                ui.setContentPane(ts);
-                ui.pack();
-                ts.requestFocusInWindow();
-                ui.revalidate();
 
-            }
-            case PLAYING -> {
-                double drawInterval = 1000000000.0 / FPS;
-                double delta = 0;
-                long lastTime = System.nanoTime();
-                long currentTime;
-                ui.setContentPane(gp);
-                ui.pack();
-                gp.requestFocusInWindow();
-                ui.revalidate();
-                double dt = 1.0 / FPS;
-                while (gameThread != null) {
+        double drawInterval = 1000000000.0 / FPS;
+        double delta = 0;
+        long lastTime = System.nanoTime();
+        long currentTime;
+        double dt = 1.0 / FPS;
 
-                    currentTime = System.nanoTime();
-                    delta += (currentTime - lastTime) / drawInterval;
-                    lastTime = currentTime;
+        while (running) {
+            currentTime = System.nanoTime();
+            delta += (currentTime - lastTime) / drawInterval;
+            lastTime = currentTime;
 
-                    if (delta >= 1) {
+            if (delta >= 1) {
+                switch (currState) {
+                    case PLAYING -> {
                         gp.tick(dt);
-                        delta--;
                     }
-                    if (delta < 1) { //när delta är mindre än 1 och inte uppdaterar tick() så används den inte
-                        try {
-                            Thread.sleep(1);
-                        } catch (Exception e) {
-                        }
+                    case LOSE -> {
+                    }
+                    case MENU -> {
+                    }
+                    case PAUSE -> {
                     }
                 }
+                delta--;
+            }
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
             }
         }
+    }
 
+    public void playSound(SoundEffect soundEffect) {
+        sound.playSound(soundEffect);
     }
 }

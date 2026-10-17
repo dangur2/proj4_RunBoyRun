@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
-public class InventoryScreen {
+public class InventoryScreen{
     //bry dig inte om alla dessa variabler :3
     private BufferedImage inventoryBackground, inventoryTooltip, tooltipDestroy, tooltipUse;
     private final Player player;
@@ -40,7 +40,8 @@ public class InventoryScreen {
         createUseTooltip();
     }
 
-    public void handleLeftClick(int x, int y) {
+
+    public void LeftClick(int x, int y) {
         //ta bort en item om du vänsterklickar på tooltippen när den är uppe
         if (destroyTooltip.get(selectedSlot).contains(x, y) && showTooltip) {
             player.getInventory().removeItem(selectedSlot);
@@ -64,7 +65,8 @@ public class InventoryScreen {
         }
     }
 
-    public void handleRightClick(int x, int y) {
+
+    public void RightClick(int x, int y) {
         //om du högerklickar en slot, oavsett om den är highlightad eller inte, sålänge den har en item, öppna tooltip på den itemen
         for (int i = 0; i < slots.size(); i++) {
             if (slots.get(i).contains(x, y)) {
@@ -75,6 +77,7 @@ public class InventoryScreen {
             }
         }
     }
+
 
     private void createDestroyTooltip() {
         for (int i = 0; i < column; i++) {
@@ -122,4 +125,6 @@ public class InventoryScreen {
             g2.drawImage(player.getInventory().getItem(i).getItemImage(), slots.get(i).x + itemPaddingX, slots.get(i).y + itemPaddingY, null);
         }
     }
+
+    
 }

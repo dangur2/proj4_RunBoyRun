@@ -10,57 +10,71 @@ import javax.imageio.ImageIO;
 public class Player extends Entity {
 
     private final Inventory inventory;
-    private int currHealth = 12;
+    private int currHealth;
     private final int maxHealth = 100;
     private int dmgCounter;
     private final GamePanel gp;
     private double length;
+    private boolean playerLost = false;
 
     public Player(TileManager tm, GamePanel gp) {
         this.gp = gp;
-        this.currHealth = 100;
-        collArea = new Rectangle(10,25,12,7);
+        this.currHealth = 1;
+        collArea = new Rectangle(10, 25, 12, 7);
         inventory = new Inventory(new ArrayList<>());
         setStartingValues(tm.findFreePosition());
         setPlayerImage();
     }
-    public void increaseHealth(int x){
+
+    public void increaseHealth(int x) {
         this.currHealth += x;
         if (currHealth > maxHealth) {
             currHealth = maxHealth;
         }
     }
-    public int getHealth(){
+
+    public int getHealth() {
         return this.currHealth;
     }
-    public Inventory getInventory(){
+
+    public Inventory getInventory() {
         return this.inventory;
     }
 
-    public int getPlayerX(){
+    public int getPlayerX() {
         return playerSizeX;
     }
-    public int getPlayerY(){
+
+    public int getPlayerY() {
         return playerSizeY;
     }
-    public void hurt(){
-        if(currHealth > 0){
-            dmgCounter ++;
-            if (dmgCounter >= 50) { 
+
+    public void hurt() {
+        if (currHealth > 0) {
+            dmgCounter++;
+            if (dmgCounter >= 60) { //tappa 1 hp varje sekund
                 currHealth -= 1;
                 dmgCounter = 0;
+            } else if (currHealth < 10) { //under 10hp, spela low hp ljud 4ggr per sekund
+                if (dmgCounter % 15 == 0) {
+                    gp.playSound(SoundEffect.LOWHP);
+                }
             }
-            if (currHealth < 10) {
-                
-            }
-            
+        } else {
+            playerLose();
         }
-        playerLose();
+    }
+
+    public boolean isDead() {
+        return playerLost;
     }
 
     private void playerLose() {
-        
+        direction = Direction.LOST;
+        playerLost = true;
+        spriteNum = 2;
     }
+
     private void setStartingValues(Point p) {
         speed = 150;
         x = p.x;
@@ -82,12 +96,15 @@ public class Player extends Entity {
             right2 = ImageIO.read(getClass().getResourceAsStream("/Animation/character_right_walk2.png"));
             idle1 = ImageIO.read(getClass().getResourceAsStream("/Animation/character_idle1.png"));
             idle2 = ImageIO.read(getClass().getResourceAsStream("/Animation/character_idle2.png"));
+            lost1 = ImageIO.read(getClass().getResourceAsStream("/Animation/character_lose1.png"));
+            lost2 = ImageIO.read(getClass().getResourceAsStream("/Animation/character_lose2.png"));
         } catch (IOException | IllegalArgumentException e) {
             throw new IllegalStateException("no find sprite amigo", e);
         }
     }
 
     public void move(double dt, double dx, double dy, int worldSizeX, int worldsizeY, TileManager tm) {
+
         length = Math.sqrt(dx * dx + dy * dy); //1,0 = 1, 0,0 = 0, 1,1 = 1,4
 
         if (length == 0) {
@@ -99,20 +116,18 @@ public class Player extends Entity {
         dx = dx / length; //normalisera värdet, ex. 0,7 = 1 / 1.4 (om två directions hålls inne samtidigt)
         dy = dy / length;
 
-         //kolla om tilen man går mot är solid för collision
-        
+        //kolla om tilen man går mot är solid för collision
         double newX = x + dx * speed * dt;
         double newY = y + dy * speed * dt;
 
         //kolla om du kan gå höger eller vänster
-        if(tm.canStandAt(newX, y, collArea)){
+        if (tm.canStandAt(newX, y, collArea)) {
             x = newX;
         }
         //kolla om du kan gå upp eller ner
-        if (tm.canStandAt(x, newY, collArea)){
+        if (tm.canStandAt(x, newY, collArea)) {
             y = newY;
         }
-        
 
         //updatera riktningen på spelaren för matcha animationen
         if (dx >= 1) {
@@ -127,12 +142,16 @@ public class Player extends Entity {
         if (dy <= -1) {
             direction = Direction.UP;
         }
-        
+
         updateSprite();
+
     }
-    private void updateSprite(){
+
+    private void updateSprite() {
+
         spriteCounter++;
         //hastigheten av hur snabbt den byter sprite vid gång
+
         if (spriteCounter > 15) {
             if (spriteNum == 1) {
                 playSound();
@@ -142,6 +161,7 @@ public class Player extends Entity {
             }
             spriteCounter = 0;
         }
+
     }
 
     private void playSound() {
@@ -149,6 +169,7 @@ public class Player extends Entity {
             gp.playSound(SoundEffect.STEP);
         }
     }
+
     public void draw(Graphics2D g2, Camera camera) {
         BufferedImage image = null;
 
@@ -193,14 +214,24 @@ public class Player extends Entity {
                     image = idle2;
                 }
             }
+            case Direction.LOST -> {
+                if (spriteNum == 1) {
+                    image = lost1;
+                }
+                if (spriteNum == 2) {
+                    image = lost2;
+                }
+            }
         }
         g2.drawImage(image, ((int) x - (int) camera.getTx()), ((int) y - (int) camera.getTy()), playerSizeX, playerSizeY, null);
     }
-    public Rectangle getBounds(){
+
+    public Rectangle getBounds() {
         return collArea;
     }
-    public Rectangle getCollison(){
-        return new Rectangle((int)x+collArea.x,(int)y+collArea.y,playerSizeX,playerSizeY);
+
+    public Rectangle getCollison() {
+        return new Rectangle((int) x + collArea.x, (int) y + collArea.y, playerSizeX, playerSizeY);
     }
 
     public double getX() {
