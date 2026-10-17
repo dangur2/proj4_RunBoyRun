@@ -7,12 +7,12 @@ Still working on implementing more, see "Future Goals"!
 
 
 Image of titleScreen.
-![Example image2](runboy_example5.png)
+![Example image2](runboy_example9.png)
 
 
-Image of a generated map.
-![Example image1](runboy_example7.png)
+Image of an item usage.
+![Example image1](runboy_example10.png)
 
 
-Image of removing an item.
-![Example image3](runboy_example8.png)
+Image of game summary when u lose.
+![Example image3](runboy_example11.png)
