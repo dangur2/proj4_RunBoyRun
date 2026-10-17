@@ -15,4 +15,4 @@ Image of an item usage.
 
 
 Image of game summary when u lose.
-![Example image3](runboy_example11.png)
+![Example image3](runboy_example12.png)
