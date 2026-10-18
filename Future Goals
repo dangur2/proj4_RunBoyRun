@@ -1,8 +1,8 @@
 Working on: 
-[] Improved item spawns, rarity on spawns. 
+[X] Improved item spawns, rarity on spawns. 
 [] Randomly spawning trees, flowers (will probably need Zbuffer). 
 [] (Maybe) swimming to traverse water [] Enemies to make gameloop harder. 
 [] escape to pause & return to titlescreen. 
-[] timer and scoreCounter. 
-[] death / lose state. 
+[X] timer and scoreCounter. 
+[X] death / lose state. 
 [] difficulty setting to make itemspawns fewer / more enemies / less healing from item
